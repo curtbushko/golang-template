@@ -19,6 +19,21 @@
     {
       overlays.default = final: prev: {
         go = final."go_1_${toString goVersion}";
+        go-task = prev.go-task.overrideAttrs (oldAttrs: rec {
+          version = "3.46.1";
+          src = prev.fetchFromGitHub {
+            owner = "go-task";
+            repo = "task";
+            rev = "v${version}";
+            hash = "sha256-CKUL2/XB8bGne+9troYnpJFfmAGTAwOihyb3caj1OdA=";
+          };
+          vendorHash = "sha256-Tm0tqureCRwcP5KKDTa9TO1yZ3Px3ulf9/jKQDDTjDw=";
+          ldflags = [
+            "-s"
+            "-w"
+            "-X=github.com/go-task/task/v3/internal/version.version=${version}"
+          ];
+        });
       };
 
       devShells = forEachSupportedSystem ({ pkgs }: {
