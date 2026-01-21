@@ -27,9 +27,27 @@
             docker
             # go (version is specified by overlay)
             go
+            go-task
             gotools
             golangci-lint
           ];
+
+          shellHook = ''
+            # Generate ~/.taskrc.yml for go-task configuration
+            mkdir -p ~/.task
+            cat > ~/.taskrc.yml << 'EOF'
+remote:
+  insecure: true
+  offline: true
+  timeout: "30s"
+  cache-expiry: "24h"
+  cache-dir: ~/.task
+  trusted-hosts:
+    - github.com
+EOF
+            echo "Golang development environment loaded"
+            echo "Go version: $(go version)"
+          '';
         };
       });
     };
