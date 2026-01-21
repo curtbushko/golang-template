@@ -1,9 +1,13 @@
 version: "3"
 
-# Built-in variables used: OS, ARCH, ROOT_DIR
+# Built-in variables used: ROOT_DIR
 output: prefixed
 
 vars:
+  OS:
+    sh: go env GOOS
+  ARCH:
+    sh: go env GOARCH
   BINARY:
     sh: basename -s .git $(git remote get-url origin)
 
