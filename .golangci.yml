@@ -135,6 +135,8 @@ linters-settings:
       - k
       - v
       - t
+      - tt  # test table entry
+      - tc  # test case
 
   funlen:
     lines: 80
