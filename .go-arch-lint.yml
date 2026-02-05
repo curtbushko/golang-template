@@ -1,5 +1,5 @@
 # go-arch-lint configuration for Hexagonal/Onion Architecture
-# Configured for jira-sync project structure
+# Generic template - customize components for your project
 #
 # Install: go install github.com/fe3dback/go-arch-lint@latest
 # Usage:   go-arch-lint check
@@ -13,38 +13,43 @@ allow:
   depOnAnyVendor: true
 
 # Define architectural components
+# Hexagonal Architecture Layers (inside-out):
+#   1. Domain (innermost) - pure business logic, no dependencies
+#   2. Ports - interfaces defining boundaries
+#   3. Application - use cases/services orchestrating domain logic
+#   4. Adapters (outermost) - infrastructure implementations
 components:
-  # OUTER LAYER: Adapters (Infrastructure implementations)
-  filesystem:
-    in: adapters/filesystem/**
-
-  jira:
-    in: adapters/jira/**
-
-  hashing:
-    in: adapters/hashing/**
-
-  # APPLICATION LAYER: Services/Use Cases
-  pull:
-    in: application/pull/**
-
-  push:
-    in: application/push/**
-
-  export:
-    in: application/export/**
-
-  transition:
-    in: application/transition/**
-
-  # INNER LAYERS: Core Business Logic
-  ports:
-    in: ports/**
-
+  # INNER LAYER: Domain (pure business logic)
+  # Contains: entities, value objects, domain services, domain errors
   domain:
     in: domain/**
 
-  # Supporting
+  # INNER LAYER: Ports (interfaces)
+  # Contains: repository interfaces, service interfaces, DTOs
+  ports:
+    in: ports/**
+
+  # APPLICATION LAYER: Use Cases/Services
+  # Contains: application services that orchestrate domain logic
+  # Add your use cases here, e.g.:
+  #   usecase_name:
+  #     in: application/usecase_name/**
+  application:
+    in: application/**
+
+  # OUTER LAYER: Adapters (Infrastructure)
+  # Contains: implementations of ports (repositories, clients, etc.)
+  # Add your adapters here, e.g.:
+  #   database:
+  #     in: adapters/database/**
+  #   http:
+  #     in: adapters/http/**
+  #   grpc:
+  #     in: adapters/grpc/**
+  adapters:
+    in: adapters/**
+
+  # Supporting: Configuration
   config:
     in: config/**
 
@@ -53,53 +58,36 @@ components:
     in: integration/**
 
 # Components that can be used by all other components
+# Domain and ports are the core - everything can depend on them
 commonComponents:
   - domain
   - ports
 
-# Dependency rules - defines allowed import relationships
+# Dependency rules - enforces hexagonal architecture constraints
+# Key principle: dependencies point INWARD (adapters -> application -> ports -> domain)
 deps:
-  # Application services implement business logic using ports
-  pull:
-    mayDependOn:
-      - ports
-
-  push:
-    mayDependOn:
-      - ports
-
-  export:
-    mayDependOn:
-      - ports
-
-  transition:
-    mayDependOn:
-      - ports
+  # Domain is pure - NO external dependencies (innermost layer)
+  # Only standard library allowed
+  domain:
+    anyVendorDeps: true
 
   # Ports define interfaces - only depend on domain types (via commonComponents)
   ports:
     anyVendorDeps: true
 
-  # Domain is pure - NO external dependencies (innermost layer)
-  domain:
-    anyVendorDeps: true
-
-  # Filesystem adapter implements TaskRepository port
-  filesystem:
+  # Application layer uses ports to define behavior
+  # Does NOT depend on adapters (dependency inversion)
+  application:
     mayDependOn:
       - ports
 
-  # Jira adapter implements JiraClient port
-  jira:
+  # Adapters implement ports - they depend on ports but not on each other
+  # This is the outermost layer that connects to external systems
+  adapters:
     mayDependOn:
       - ports
 
-  # Hashing adapter implements HashComputer port
-  hashing:
-    mayDependOn:
-      - ports
-
-  # Config is standalone
+  # Config is standalone infrastructure concern
   config:
     anyVendorDeps: true
 
