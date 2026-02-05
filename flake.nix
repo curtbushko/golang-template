@@ -1,9 +1,12 @@
 {
   description = "Golang flake";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    golang-shared-configs.url = "github:curtbushko/golang-shared-configs";
+  };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, golang-shared-configs }:
     let
       goVersion = 25; # Change this to update the whole stack
 
@@ -48,6 +51,9 @@
           ];
 
           shellHook = ''
+            # Copy shared Go config files if not present
+            ${golang-shared-configs.lib.copyConfigsHook [ "golangci" "goArchLint" ]}
+
             # Generate ~/.taskrc.yml for go-task configuration
             mkdir -p ~/.task
             cat > ~/.taskrc.yml << 'EOF'
