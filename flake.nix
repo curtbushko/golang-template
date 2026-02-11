@@ -1,10 +1,8 @@
 {
   description = "Golang flake";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    golang-shared-configs.url = "github:curtbushko/golang-shared-configs";
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.golang-shared-configs.url = "github:curtbushko/golang-shared-configs";
 
   outputs = { self, nixpkgs, golang-shared-configs }:
     let
@@ -12,62 +10,51 @@
 
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
+        inherit system;
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
           overlays = [ self.overlays.default ];
         };
       });
+
+      # Build go-ai-lint from source
+      go-ai-lint = { pkgs }: pkgs.buildGoModule {
+        pname = "go-ai-lint";
+        version = "1.0.0";
+        src = pkgs.fetchFromGitHub {
+          owner = "curtbushko";
+          repo = "go-ai-lint";
+          rev = "v1.0.0";
+          sha256 = "sha256-y2G7dTZqM/rEQaALu54bHigBeO1xxRIblBJ7QxOffW4=";
+        };
+        subPackages = [ "cmd/go-ai-lint" ];
+        vendorHash = "sha256-zkXyXTEnMmBZnvzoq0UWKgzWZlyNRyQZCYAv+huZo0I=";
+      };
     in
     {
       overlays.default = final: prev: {
         go = final."go_1_${toString goVersion}";
-        go-task = prev.go-task.overrideAttrs (oldAttrs: rec {
-          version = "3.46.1";
-          src = prev.fetchFromGitHub {
-            owner = "go-task";
-            repo = "task";
-            rev = "v${version}";
-            hash = "sha256-CKUL2/XB8bGne+9troYnpJFfmAGTAwOihyb3caj1OdA=";
-          };
-          vendorHash = "sha256-Tm0tqureCRwcP5KKDTa9TO1yZ3Px3ulf9/jKQDDTjDw=";
-          ldflags = [
-            "-s"
-            "-w"
-            "-X=github.com/go-task/task/v3/internal/version.version=${version}"
-          ];
-        });
       };
 
-      devShells = forEachSupportedSystem ({ pkgs }: {
+      devShells = forEachSupportedSystem ({ pkgs, system }:
+        let
+          sharedConfigs = golang-shared-configs.packages.${system}.all-configs;
+        in {
         default = pkgs.mkShell {
           packages = with pkgs; [
             docker
             # go (version is specified by overlay)
             go
-            go-task
             gotools
             golangci-lint
+            (go-ai-lint { inherit pkgs; })
+            sharedConfigs
           ];
 
           shellHook = ''
-            # Copy shared Go config files if not present
-            ${golang-shared-configs.lib.copyConfigsHook [ "golangci" "goArchLint" ]}
-
-            # Generate ~/.taskrc.yml for go-task configuration
-            mkdir -p ~/.task
-            cat > ~/.taskrc.yml << 'EOF'
-remote:
-  insecure: true
-  offline: true
-  timeout: "30s"
-  cache-expiry: "24h"
-  cache-dir: ~/.task
-  trusted-hosts:
-    - github.com
-EOF
-            echo "Golang development environment loaded"
-            echo "Go version: $(go version)"
+            cp -f ${sharedConfigs}/.golangci.yml .golangci.yml
+            cp -f ${sharedConfigs}/.go-arch-lint.yml .go-arch-lint.yml
           '';
         };
       });

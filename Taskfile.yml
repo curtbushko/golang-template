@@ -40,9 +40,26 @@ tasks:
       - GOOS={{.OS}} GOARCH={{.ARCH}} go install
 
   lint:
+    desc: Run all linters
+    cmds:
+      - task: lint:vet
+      - task: lint:golangci
+      - task: lint:arch
+
+  lint:vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
+
+  lint:golangci:
     desc: Run golangci-lint
     cmds:
       - golangci-lint run -v -c {{.ROOT_DIR}}/.golangci.yml
+
+  lint:arch:
+    desc: Run go-arch-lint
+    cmds:
+      - go-arch-lint check --arch-file {{.ROOT_DIR}}/.go-arch-lint.yml
 
   test:
     desc: Run go tests
@@ -53,8 +70,3 @@ tasks:
     desc: Run go mod tidy
     cmds:
       - go mod tidy
-
-  vet:
-    desc: Run go vet
-    cmds:
-      - go vet ./...
