@@ -46,6 +46,7 @@
             docker
             # go (version is specified by overlay)
             go
+            go-task
             gotools
             golangci-lint
             (go-ai-lint { inherit pkgs; })
@@ -55,6 +56,7 @@
           shellHook = ''
             cp -f ${sharedConfigs}/.golangci.yml .golangci.yml
             cp -f ${sharedConfigs}/.go-arch-lint.yml .go-arch-lint.yml
+            cp -f ${sharedConfigs}/.go-ai-lint.yml .go-ai-lint.yml
           '';
         };
       });
