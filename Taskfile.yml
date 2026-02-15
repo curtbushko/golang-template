@@ -45,6 +45,7 @@ tasks:
       - task: lint:vet
       - task: lint:golangci
       - task: lint:arch
+      - task: lint:ai
 
   lint:vet:
     desc: Run go vet
@@ -60,6 +61,11 @@ tasks:
     desc: Run go-arch-lint
     cmds:
       - go-arch-lint check --arch-file {{.ROOT_DIR}}/.go-arch-lint.yml
+
+  lint:ai:
+    desc: Run go-ai-lint
+    cmds:
+      - go-ai-lint run -c {{.ROOT_DIR}}/.go-ai-lint.yml
 
   test:
     desc: Run go tests
