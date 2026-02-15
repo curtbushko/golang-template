@@ -63,9 +63,23 @@ tasks:
       - go-arch-lint check --arch-file {{.ROOT_DIR}}/.go-arch-lint.yml
 
   lint:ai:
-    desc: Run go-ai-lint
+    desc: Run go-ai-lint with all analyzers
     cmds:
-      - go-ai-lint run -c {{.ROOT_DIR}}/.go-ai-lint.yml
+      - >-
+        go-ai-lint
+        -concurrencylint
+        -contextlint
+        -deferlint
+        -errorlint
+        -goroutinelint
+        -initlint
+        -interfacelint
+        -naminglint
+        -optionlint
+        -paniclint
+        -slicemaplint
+        -stringlint
+        ./...
 
   test:
     desc: Run go tests
