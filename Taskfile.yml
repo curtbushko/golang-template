@@ -21,7 +21,7 @@ tasks:
     desc: Build the binary
     cmds:
       - mkdir -p {{.ROOT_DIR}}/bin/{{.OS}}-{{.ARCH}}
-      - GOOS={{.OS}} GOARCH={{.ARCH}} go build -o {{.ROOT_DIR}}/bin/{{.OS}}-{{.ARCH}}/{{.BINARY}}
+      - GOOS={{.OS}} GOARCH={{.ARCH}} go build -o {{.ROOT_DIR}}/bin/{{.OS}}-{{.ARCH}}/{{.BINARY}} ./cmd
       - chmod +x {{.ROOT_DIR}}/bin/{{.OS}}-{{.ARCH}}/{{.BINARY}}
 
   run:
@@ -37,7 +37,7 @@ tasks:
   install:
     desc: Install the binary using go install
     cmds:
-      - GOOS={{.OS}} GOARCH={{.ARCH}} go install
+      - GOOS={{.OS}} GOARCH={{.ARCH}} go install ./cmd
 
   lint:
     desc: Run all linters
@@ -82,9 +82,20 @@ tasks:
         ./...
 
   test:
-    desc: Run go tests
+    desc: Run all tests
+    cmds:
+      - task: test:unit
+      - task: test:race
+
+  test:unit:
+    desc: Run unit tests
     cmds:
       - go test ./...
+
+  test:race:
+    desc: Run race tests
+    cmds:
+      - go test -race ./...
 
   tidy:
     desc: Run go mod tidy
