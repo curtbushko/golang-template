@@ -31,6 +31,19 @@
         subPackages = [ "cmd/go-ai-lint" ];
         vendorHash = "sha256-zkXyXTEnMmBZnvzoq0UWKgzWZlyNRyQZCYAv+huZo0I=";
       };
+
+      # Build go-arch-lint from source
+      go-arch-lint = { pkgs }: pkgs.buildGoModule {
+        pname = "go-arch-lint";
+        version = "1.14.0";
+        src = pkgs.fetchFromGitHub {
+          owner = "fe3dback";
+          repo = "go-arch-lint";
+          rev = "v1.14.0";
+          sha256 = "sha256-AMPqMtBg1RjbqlfAHz193q1SFeqDmF7WrjvX2psqVro=";
+        };
+        vendorHash = "sha256-2n7OjF4gl+qq9M5EtU0nmgWwRPZ3YvmLQDAgJ8w9S1M=";
+      };
     in
     {
       overlays.default = final: prev: {
@@ -52,6 +65,7 @@
             go-task
             gotools
             golangci-lint
+            (go-arch-lint { inherit pkgs; })
             (go-ai-lint { inherit pkgs; })
             sharedConfigs
             make-wrapper
