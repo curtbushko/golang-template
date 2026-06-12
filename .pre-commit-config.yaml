@@ -1,0 +1,23 @@
+repos:
+  - repo: local
+    hooks:
+      - id: task-build
+        name: Build
+        entry: task build
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: task-lint
+        name: Lint
+        entry: task lint
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: task-test
+        name: Test
+        entry: task test
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]

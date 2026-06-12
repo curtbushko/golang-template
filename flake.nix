@@ -65,6 +65,7 @@
             go-task
             gotools
             golangci-lint
+            pre-commit
             (go-arch-lint { inherit pkgs; })
             (go-ai-lint { inherit pkgs; })
             sharedConfigs
