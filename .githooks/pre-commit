@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v task >/dev/null 2>&1; then
+  echo "pre-commit: 'task' not found in PATH; enter the dev shell (nix develop) first" >&2
+  exit 1
+fi
+
+task build
+task lint
+task test

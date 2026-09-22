@@ -79,6 +79,11 @@
               git pull --quiet || true
             fi
 
+            # Enable native git pre-commit hook (build/lint/test)
+            if [ -d .githooks ]; then
+              git config core.hooksPath .githooks 2>/dev/null || true
+            fi
+
             cp -f ${sharedConfigs}/.golangci.yml .golangci.yml
             cp -f ${sharedConfigs}/.go-arch-lint.yml .go-arch-lint.yml
             cp -f ${sharedConfigs}/.go-ai-lint.yml .go-ai-lint.yml
