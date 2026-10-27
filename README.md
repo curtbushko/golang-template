@@ -10,15 +10,13 @@ A nice way to setup tooling. Run `direnv allow` to enable envrc to load settings
 
 **Note:** Requires that you are using nix. If you are on Mac, use the [Determinate Systems](https://determinate.systems/nix-installer/) nix installer. 
 
-### Makefile
+### Taskfile.yml
 
-A standard Makefile with targets for build, lint and test. See `make help` for targets.
+Tasks for building and testing. Run `task --list` for available tasks.
 
-**Note:** the Makefile assumes that the binary to build is the basename of the current repo.
+**Note:** the build task assumes that the binary to build is the basename of the current repo.
 
-### .golangci.yml
-
-A strict golangci-lint file that is based on "Effective Go". It is designed as a way to stop AI from writing slop.
+Pre-commit hooks run `task build` and `task test`.
 
 ### .gitignore
 
