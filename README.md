@@ -12,11 +12,15 @@ A nice way to setup tooling. Run `direnv allow` to enable envrc to load settings
 
 ### Taskfile.yml
 
-Tasks for building and testing. Run `task --list` for available tasks.
+Tasks for building, linting and testing. Run `task --list` for available tasks.
 
 **Note:** the build task assumes that the binary to build is the basename of the current repo.
 
-Pre-commit hooks run `task build` and `task test`.
+Pre-commit hooks run `task build`, `task lint` and `task test`.
+
+### Linting
+
+`task lint` runs `go vet`, `golangci-lint` and `go-ai-lint`. The Nix dev shell provides the tools and shared lint configurations. Architecture linting is not included.
 
 ### .gitignore
 

@@ -39,6 +39,42 @@ tasks:
     cmds:
       - GOOS={{.OS}} GOARCH={{.ARCH}} go install ./cmd
 
+  lint:
+    desc: Run all linters
+    cmds:
+      - task: lint:vet
+      - task: lint:golangci
+      - task: lint:ai
+
+  lint:vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
+
+  lint:golangci:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run -v -c {{.ROOT_DIR}}/.golangci.yml
+
+  lint:ai:
+    desc: Run go-ai-lint with all analyzers
+    cmds:
+      - >-
+        go-ai-lint
+        -concurrencylint
+        -contextlint
+        -deferlint
+        -errorlint
+        -goroutinelint
+        -initlint
+        -interfacelint
+        -naminglint
+        -optionlint
+        -paniclint
+        -slicemaplint
+        -stringlint
+        ./...
+
   test:
     desc: Run all tests
     cmds:

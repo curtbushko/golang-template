@@ -38,3 +38,7 @@ go.work.sum
 .tasks
 
 .trash/
+
+# Nix-managed config files (from golang-shared-configs flake)
+.golangci.yml
+.go-ai-lint.yml
